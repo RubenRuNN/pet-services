@@ -7,6 +7,7 @@
 - **UI Components**: Shadcn/ui
 - **Styling**: TailwindCSS
 - **Email**: Resend
+- **Internationalization**: next-intl (English, Portuguese)
 - **Code Quality**: Biome (linting & formatting)
 - **Additional Services**: Twilio (SMS), Meta WhatsApp Cloud API (optional)
 

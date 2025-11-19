@@ -1,19 +1,24 @@
 /**
  * Database Schemas Barrel Export
  * 
- * This file will export all database schemas.
- * Schemas will be created in separate files and exported here.
- * 
- * Example structure:
- * export * from './tenants';
- * export * from './users';
- * export * from './customers';
- * etc.
- * 
- * For now, this is a placeholder. Schemas will be implemented
- * according to the plan.md specifications.
+ * All database schemas are exported from here for use with Drizzle ORM
  */
 
-// Placeholder - schemas will be implemented here
-export {};
+// Core Multi-Tenancy
+export * from './tenants';
+export * from './users';
+export * from './passwords';
+export * from './subscriptions';
 
+// Business Domain
+export * from './customers';
+export * from './pets';
+export * from './services';
+export * from './appointments';
+export * from './staff';
+export * from './tasks';
+
+// Supporting Tables
+export * from './notifications';
+export * from './audit';
+export * from './files';
