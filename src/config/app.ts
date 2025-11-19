@@ -1,24 +1,50 @@
 import { env } from './env';
 
 /**
+ * Helper to safely check server-side env vars
+ * Only works on server-side, returns false on client
+ * This prevents accessing server-side env vars on the client (which @t3-oss/env-nextjs blocks)
+ */
+function hasServerEnvVar(key: string): boolean {
+  // Always return false on client-side to prevent accessing server env vars
+  if (typeof window !== 'undefined') {
+    return false;
+  }
+  
+  // Server-side: safely check if env var exists
+  // We access process.env directly to avoid @t3-oss/env-nextjs client-side protection
+  try {
+    const value = process.env[key];
+    return !!value && value !== '';
+  } catch {
+    // If env var is not accessible, return false
+    return false;
+  }
+}
+
+/**
  * Application Configuration
  * Centralized app settings and feature flags
+ * Note: Feature flags that depend on server-side env vars are only accurate on the server
  */
 
 export const appConfig = {
   name: env.NEXT_PUBLIC_APP_NAME || 'Pet Services',
   url: env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
-  environment: env.NODE_ENV,
   version: '0.1.0',
 
   // Feature Flags
+  // Note: Server-side feature flags (SMS, WhatsApp, Stripe, File Uploads)
+  // will return false on the client side for security
   features: {
     // Enable/disable features for gradual rollout
     customerPortal: true,
-    smsNotifications: !!env.TWILIO_ACCOUNT_SID,
-    whatsappNotifications: !!env.WHATSAPP_ACCESS_TOKEN,
-    stripeBilling: !!env.STRIPE_SECRET_KEY,
-    fileUploads: !!env.BLOB_STORAGE_KEY,
+    // Server-side only: These check server env vars safely
+    smsNotifications: hasServerEnvVar('TWILIO_ACCOUNT_SID'),
+    whatsappNotifications: hasServerEnvVar('WHATSAPP_ACCESS_TOKEN'),
+    stripeBilling: hasServerEnvVar('STRIPE_SECRET_KEY'),
+    fileUploads: hasServerEnvVar('BLOB_STORAGE_KEY'),
+    // Client-safe features
     analytics: true,
     recurringAppointments: true,
     taskTemplates: true,
@@ -74,6 +100,16 @@ export const appConfig = {
     appointmentReminderHours: [24, 2], // 24 hours and 2 hours before
     defaultAppointmentDuration: 60, // minutes
     maxRecurringAppointments: 52, // weeks
+  },
+
+  // Internationalization
+  i18n: {
+    defaultLocale: 'en',
+    locales: ['en', 'pt'] as const,
+    localeNames: {
+      en: 'English',
+      pt: 'Português',
+    },
   },
 } as const;
 

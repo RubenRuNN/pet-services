@@ -70,15 +70,19 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
     }),
     Email({
-      server: {
-        host: env.RESEND_API_KEY ? 'smtp.resend.com' : undefined,
-        port: 587,
-        auth: {
-          user: 'resend',
-          pass: env.RESEND_API_KEY,
-        },
-      },
+      server: env.RESEND_API_KEY
+        ? {
+            host: 'smtp.resend.com',
+            port: 587,
+            auth: {
+              user: 'resend',
+              pass: env.RESEND_API_KEY,
+            },
+          }
+        : undefined,
       from: env.RESEND_FROM_EMAIL,
+      // Note: For Resend, you might want to use their API directly instead of SMTP
+      // This SMTP configuration works but Resend API is more efficient
     }),
   ],
   callbacks: {

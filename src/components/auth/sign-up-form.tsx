@@ -2,13 +2,17 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
+import { routes } from '@/config/routes';
 
 export function SignUpForm() {
   const router = useRouter();
+  const t = useTranslations('auth');
+  const tCommon = useTranslations('common');
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -21,12 +25,12 @@ export function SignUpForm() {
     e.preventDefault();
 
     if (formData.password !== formData.confirmPassword) {
-      toast.error('Passwords do not match');
+      toast.error(t('passwordMismatch') || 'Passwords do not match');
       return;
     }
 
     if (formData.password.length < 8) {
-      toast.error('Password must be at least 8 characters');
+      toast.error(t('passwordTooShort') || 'Password must be at least 8 characters');
       return;
     }
 
@@ -50,10 +54,10 @@ export function SignUpForm() {
         throw new Error(error.message || 'Failed to create account');
       }
 
-      toast.success('Account created successfully! Please sign in.');
-      router.push('/sign-in');
+      toast.success(t('accountCreated') || 'Account created successfully!');
+      router.push(routes.signIn);
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'An error occurred. Please try again.');
+      toast.error(error instanceof Error ? error.message : tCommon('error'));
     } finally {
       setIsLoading(false);
     }
@@ -62,7 +66,7 @@ export function SignUpForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-2">
-        <Label htmlFor="name">Full Name</Label>
+        <Label htmlFor="name">{t('fullName') || 'Full Name'}</Label>
         <Input
           id="name"
           type="text"
@@ -74,7 +78,7 @@ export function SignUpForm() {
         />
       </div>
       <div className="space-y-2">
-        <Label htmlFor="email">Email</Label>
+        <Label htmlFor="email">{t('email')}</Label>
         <Input
           id="email"
           type="email"
@@ -86,11 +90,11 @@ export function SignUpForm() {
         />
       </div>
       <div className="space-y-2">
-        <Label htmlFor="password">Password</Label>
+        <Label htmlFor="password">{t('password')}</Label>
         <Input
           id="password"
           type="password"
-          placeholder="At least 8 characters"
+          placeholder={t('passwordPlaceholder') || 'At least 8 characters'}
           value={formData.password}
           onChange={(e) => setFormData({ ...formData, password: e.target.value })}
           required
@@ -98,11 +102,11 @@ export function SignUpForm() {
         />
       </div>
       <div className="space-y-2">
-        <Label htmlFor="confirmPassword">Confirm Password</Label>
+        <Label htmlFor="confirmPassword">{t('confirmPassword')}</Label>
         <Input
           id="confirmPassword"
           type="password"
-          placeholder="Confirm your password"
+          placeholder={t('confirmPassword')}
           value={formData.confirmPassword}
           onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
           required
@@ -110,12 +114,12 @@ export function SignUpForm() {
         />
       </div>
       <Button type="submit" className="w-full" disabled={isLoading}>
-        {isLoading ? 'Creating account...' : 'Create Account'}
+        {isLoading ? tCommon('loading') : t('createAccount')}
       </Button>
       <div className="text-center text-sm text-muted-foreground">
-        Already have an account?{' '}
-        <a href="/sign-in" className="text-primary hover:underline">
-          Sign in
+        {t('alreadyHaveAccount')}{' '}
+        <a href={routes.signIn} className="text-primary hover:underline">
+          {t('signIn')}
         </a>
       </div>
     </form>
